@@ -1,0 +1,46 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs'),path=require('node:path');
+const {chromium}=require('./dependencies.cjs').dependency('playwright');
+(async()=>{
+ const b=await chromium.launch({channel:'msedge',headless:true});
+ const page=await b.newPage({viewport:{width:1440,height:1000}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ const state=path.resolve('.local-backup/studio-live');
+ const baseline=JSON.parse(fs.readFileSync('design/approved-layout.json'));
+ const backup={};for(const name of ['draft.json','proposal.json','request.json'])backup[name]=fs.existsSync(path.join(state,name))?fs.readFileSync(path.join(state,name)):null;
+ try{
+ await page.goto('http://127.0.0.1:47831');await page.waitForFunction(()=>document.querySelector('#sMessage').textContent.startsWith('Live with'));
+ const original=await page.evaluate(()=>studioDraft());
+ assert.equal(await page.evaluate(()=>effectiveMode()),'day');
+ await page.getByRole('button',{name:'Night',exact:true}).click();assert.equal(await page.evaluate(()=>effectiveMode()),'night');
+ await page.getByRole('button',{name:'Day',exact:true}).click();
+ await page.locator('#sPanel').getByRole('button',{name:'Heart rate',exact:true}).click();
+ await page.locator('#sPanel').getByLabel('X',{exact:true}).fill('160');await page.locator('#sPanel').getByLabel('X',{exact:true}).press('Tab');
+ assert.equal((await page.evaluate(()=>studioDraft())).fields.find(f=>f.id==='eight0').x,160);
+ await page.locator('#sUndo').click();assert.equal((await page.evaluate(()=>studioDraft())).fields.find(f=>f.id==='eight0').x,original.fields.find(f=>f.id==='eight0').x);
+ await page.locator('[data-page=advanced]').click();assert.equal(await page.locator('#studio').isVisible(),false);assert.equal(await page.locator('.case').isVisible(),true);
+ await page.getByRole('button',{name:'← Simple workspace',exact:true}).click();assert.equal(await page.locator('#studio').isVisible(),true);
+ await page.locator('[data-page=fields]').click();await page.locator('#sPanel').getByRole('button',{name:'← All data fields'}).click();
+ const count=(await page.evaluate(()=>studioDraft())).fields.length;
+ await page.locator('#sPanel').getByLabel('Add a field').selectOption('Altitude');assert.equal((await page.evaluate(()=>studioDraft())).fields.length,count+1);
+ await page.locator('#sPanel').getByRole('button',{name:'Remove field',exact:true}).click();assert.equal((await page.evaluate(()=>studioDraft())).fields.length,count);
+ await page.locator('[data-simple-mode=aod]').click();assert.equal(await page.evaluate(()=>effectiveMode()),'aod');
+ const dayFields=(await page.evaluate(()=>studioDraft())).fields.map(f=>[f.id,f.x,f.y]);
+ await page.locator('#sPanel').getByLabel('Add reading').selectOption('Altitude');
+ await page.locator('#sPanel').getByLabel('X',{exact:true}).fill('170');await page.locator('#sPanel').getByLabel('X',{exact:true}).press('Tab');
+ assert.deepEqual((await page.evaluate(()=>studioDraft())).fields.map(f=>[f.id,f.x,f.y]),dayFields);
+ await page.locator('#sPanel').getByRole('button',{name:'Remove from AOD'}).click();
+ await page.locator('[data-page=ai]').click();await page.locator('#sPanel textarea').fill('Make the date larger');
+ await page.getByRole('button',{name:'Share request with Codex'}).click();await page.waitForFunction(()=>document.querySelector('#sMessage').textContent.startsWith('Request ready'));
+ assert.equal(JSON.parse(fs.readFileSync(path.join(state,'request.json'))).instruction,'Make the date larger');
+ await page.waitForTimeout(2000);
+ const base=await page.evaluate(()=>studioDraft());const design=structuredClone(base);design.accent='#99ddbb';
+ fs.writeFileSync(path.join(state,'proposal.json'),JSON.stringify({id:'test-'+Date.now(),base,design,message:'Test proposal'}));
+ await page.waitForFunction(()=>studioDraft().accent==='#99ddbb');
+ await page.locator('#sUndo').click();assert.equal((await page.evaluate(()=>studioDraft())).accent,base.accent);
+ await page.evaluate(c=>studioApply(c),original);await page.locator('[data-simple-mode=day]').click();
+ await page.screenshot({path:'.test-output/studio-new.png'});
+ await page.locator('[data-simple-mode=aod]').click();await page.screenshot({path:'.test-output/studio-aod.png'});
+ assert.deepEqual(errors,[]);console.log('PASS: modes, field position/undo, Advanced round trip, add/remove, independent AOD, AI request and live proposal/undo.');
+ }finally{await b.close();for(const [name,data]of Object.entries(backup)){const f=path.join(state,name);if(data)fs.writeFileSync(f,data);else if(fs.existsSync(f))fs.unlinkSync(f);}}
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -1,0 +1,33 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const {generate,validate,sha}=require('../tools/generate.cjs');
+const root=path.resolve(__dirname,'..');
+const baseline=JSON.parse(fs.readFileSync(path.join(root,'design/approved-layout.json')));
+test('invalid or dangling imports fail before generation',()=>{
+  const bad=structuredClone(baseline);bad.fields[0].x=NaN;assert.throws(()=>validate(bad));
+  const dangling=structuredClone(baseline);dangling.bubbleGroups=[{id:'bad',members:['field:missing']}];assert.throws(()=>validate(dangling));
+  const duplicate=structuredClone(baseline);duplicate.fields.push(duplicate.fields[0]);assert.throws(()=>validate(duplicate));
+  const unknown=structuredClone(baseline);unknown.style='unimplemented';assert.throws(()=>validate(unknown));
+  const invalid=structuredClone(baseline);invalid.latitude=100;assert.throws(()=>validate(invalid));
+});
+test('generation is repeatable, preserves source files, imports edits and isolates sample data',async()=>{
+  const watched=['Watch-Face-Designer.html','design/approved-layout.json',...fs.readdirSync(path.join(root,'source')).map(n=>'source/'+n)];
+  const hashes=watched.map(n=>sha(fs.readFileSync(path.join(root,n))));
+  const output=path.join(root,'.test-output/repeat');
+  const first=await generate({output}),second=await generate({output});
+  assert.equal(first.files['manifest.json'],second.files['manifest.json']);
+  const cfg=JSON.parse(first.files['resources/config.json']);
+  assert.equal(cfg.previewHr,undefined);assert.equal(cfg.statusStates,undefined);assert.equal(cfg.markerSettings.battery,undefined);
+  assert(!String(first.files['source/ApprovedLayout.mc']).includes('68 bpm'));
+  assert(!String(first.files['preview/RuntimeProfile.mc']).includes('65%\\n'));
+  assert(first.report.some(x=>x.path==='northNeedle'&&x.status==='approximate'));
+  const changed=structuredClone(baseline);changed.digitalSize=48;changed.fields[11].x=251;changed.fields[11].color='#12ab34';changed.fields[11].useAccent=false;changed.fields[11].iconChoice='none';changed.bg='#123456';changed.style='hybrid';
+  const input=path.join(root,'.test-output/candidate.json');fs.mkdirSync(path.dirname(input),{recursive:true});fs.writeFileSync(input,JSON.stringify(changed));
+  const imported=await generate({input,output:path.join(root,'.test-output/changed')});
+  const field=JSON.parse(imported.files['resources/field-11.json']);assert.equal(field.x,251);assert.equal(field.color,'#12ab34');assert.equal(field.iconIndex,-1);
+  assert.equal(JSON.parse(imported.files['resources/config.json']).digitalSize,48);
+  assert.notEqual(sha(first.files['resources/background-day.png']),sha(imported.files['resources/background-day.png']));
+  assert.deepEqual(watched.map(n=>sha(fs.readFileSync(path.join(root,n)))),hashes);
+});

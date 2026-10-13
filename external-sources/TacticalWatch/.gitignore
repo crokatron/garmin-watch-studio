@@ -1,0 +1,15 @@
+bin/
+*.prg
+*.debug.xml
+*.der
+*.pem
+*.key
+developer_key
+.local-backup/
+node_modules/
+.test-output/
+dist/
+generated/comparison/simulator-*.png
+generated/comparison/comparison.*
+generated/comparison/difference.png
+generated/comparison/side-by-side.png

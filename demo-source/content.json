@@ -1,0 +1,66 @@
+{
+  "slug": "garmin-watch-studio",
+  "title": "Garmin Watch Studio",
+  "summary": "Design a watch face visually, preview its information hierarchy and preserve the design as JSON. Studio 2 provides the editing workspace; the accompanying Monkey C source and build tools translate supported designs into a watch application. A browser preview is not proof that every simulated field or hold interaction is available on the physical watch.",
+  "features": [
+    [
+      "Layers and fields",
+      "Select, show/hide and position time, date, health, battery, weather and custom information.",
+      "Editor"
+    ],
+    [
+      "Day / Night / Always-on",
+      "Compare colour treatments and the separate low-power layout.",
+      "Editor"
+    ],
+    [
+      "Interactions",
+      "Preview configured hold targets and see unavailable interactions explicitly.",
+      "Editor"
+    ],
+    [
+      "Solar display",
+      "Preview dawn, sunrise, sunset, dusk and other sky fields against a chosen time.",
+      "Editor"
+    ],
+    [
+      "Portable designs",
+      "Open/save JSON and export an image; Undo and guides help arrange elements.",
+      "Editor"
+    ],
+    [
+      "Watch build and comparison",
+      "Generate supported assets, compile live/preview applications and compare simulator captures.",
+      "Build pipeline"
+    ]
+  ],
+  "workflows": [
+    [
+      "Arrange a readable face",
+      [
+        "Open Watch-Face-Studio.html and choose Day. Use a fixed Preview time so changing time does not distract from spacing.",
+        "Choose a field in Layers or click it on the canvas. Drag it into position; Control/Command-click selects several and Alt-click selects underneath overlapping elements.",
+        "Use Add a field for another data item and Show guides for alignment. Hide unused fields rather than crowding the face.",
+        "Check Night and Always-on. Day and Night share positions, while the always-on layout needs its own readability review."
+      ]
+    ],
+    [
+      "Review interactions and sample data",
+      [
+        "Open Interactions and use Test holds to understand the intended press-and-hold targets. An unavailable Wallet label is a limitation, not a working launcher.",
+        "Compare a few preview times and read the solar ribbon. Sample heart rate, weather and sport fixtures are demonstration data.",
+        "Check the documented capability matrix before treating any field as live. Fields marked verify API require target-device verification."
+      ]
+    ],
+    [
+      "Save, build and compare",
+      [
+        "Save design as JSON, retain a named version and export an image for visual review. The image cannot reconstruct the editable design.",
+        "Use the existing design pipeline only with an explicitly selected design. Keep signing keys and the Garmin SDK outside this repository.",
+        "Compile both live and preview builds, capture the Garmin simulator and compare against the editor before installing on a watch.",
+        "Test actual readability, interactions and power use on hardware. Browser success alone is insufficient for a release."
+      ]
+    ]
+  ],
+  "limits": "Target and API assumptions are recorded in the source README. No new simulator or physical-watch build was run in this documentation update. Public redistribution also needs a review of bundled assets and installation-specific references."
+}

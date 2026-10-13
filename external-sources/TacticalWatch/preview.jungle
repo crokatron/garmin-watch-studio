@@ -1,0 +1,3 @@
+project.manifest = generated/preview/manifest.xml
+base.sourcePath = source;generated/source;generated/preview
+base.resourcePath = resources;generated/resources

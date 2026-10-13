@@ -1,0 +1,9 @@
+const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),dir=path.join(root,'.local-backup/studio-live');fs.mkdirSync(dir,{recursive:true});
+const port=Number(process.env.STUDIO_PORT)||47831,origin=`http://127.0.0.1:${port}`;
+const server=http.createServer(async(req,res)=>{res.setHeader('Cache-Control','no-store');const url=new URL(req.url,origin);try{
+if(req.method==='GET'&&url.pathname==='/api/draft'){const f=path.join(dir,'draft.json');res.setHeader('Content-Type','application/json');return res.end(fs.existsSync(f)?fs.readFileSync(f):fs.readFileSync(path.join(root,'design/approved-layout.json')));}
+if(req.method==='GET'&&url.pathname==='/api/proposal'){res.setHeader('Content-Type','application/json');const f=path.join(dir,'proposal.json');return res.end(fs.existsSync(f)?fs.readFileSync(f):'null');}
+if(req.method==='PUT'&&['/api/draft','/api/request'].includes(url.pathname)){if(req.headers.origin!==origin||!req.headers['content-type']?.startsWith('application/json')){res.writeHead(403);return res.end();}let body='';for await(const chunk of req){body+=chunk;if(body.length>2000000){res.writeHead(413);return res.end();}}const value=JSON.parse(body);fs.writeFileSync(path.join(dir,url.pathname==='/api/draft'?'draft.json':'request.json'),JSON.stringify(value,null,2));return res.end('OK');}
+const files={'/':'Watch-Face-Studio.html','/Watch-Face-Studio.html':'Watch-Face-Studio.html','/Watch-Face-Designer.html':'Watch-Face-Designer.html'};if(req.method==='GET'&&files[url.pathname]){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(fs.readFileSync(path.join(root,files[url.pathname])));}res.writeHead(404);res.end('Not found');
+}catch(e){res.writeHead(400);res.end('Invalid request');}});server.listen(port,'127.0.0.1',()=>console.log(`Studio: ${origin}\nShared draft: ${dir}`));

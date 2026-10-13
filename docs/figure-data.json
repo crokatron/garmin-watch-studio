@@ -1,0 +1,75 @@
+[
+  {
+    "boxes": [
+      {
+        "h": 560,
+        "selector": "#face",
+        "text": "Select and drag a field. The readings here are samples, not live watch measurements.",
+        "title": "Arrange the face",
+        "w": 560,
+        "x": 563.5,
+        "y": 414.609375
+      },
+      {
+        "h": 41,
+        "selector": "#sPreviewTime",
+        "text": "Check layout readability and the solar ribbon against a fixed time.",
+        "title": "Preview another time",
+        "w": 113,
+        "x": 726.796875,
+        "y": 1075
+      },
+      {
+        "h": 44,
+        "selector": "#sSave",
+        "text": "Save design keeps JSON; Export image creates only a picture.",
+        "title": "Save the editable design",
+        "w": 115.171875,
+        "x": 1913.828125,
+        "y": 28.5
+      }
+    ],
+    "height": 1408,
+    "width": 2055,
+    "title": "Actual tool · controls at a glance",
+    "caption": "Actual application screenshot. Numbered boxes point to the controls described below. ",
+    "key": "garmin-watch-studio"
+  },
+  {
+    "boxes": [
+      {
+        "h": 52,
+        "selector": "#watchMode",
+        "text": "Switch Day, Night and Always-on in the fictional face.",
+        "title": "Compare a display mode",
+        "w": 260,
+        "x": 318,
+        "y": 625.703125
+      },
+      {
+        "h": 29,
+        "selector": "#showSteps",
+        "text": "Show or hide sample fields to see their visual effect.",
+        "title": "Simplify the information",
+        "w": 29,
+        "x": 322,
+        "y": 689.703125
+      },
+      {
+        "h": 533.1875,
+        "selector": "#scene",
+        "text": "Colours and fields update locally. No watch build is sent.",
+        "title": "Review the watch face",
+        "w": 606.90625,
+        "x": 612,
+        "y": 476.703125
+      }
+    ],
+    "height": 1408,
+    "width": 2055,
+    "key": "simulation",
+    "title": "Try the working offline example",
+    "caption": "Screenshot of this project’s interactive demo. Side-by-side services are explicitly simulated.",
+    "cropHeight": 1050.890625
+  }
+]

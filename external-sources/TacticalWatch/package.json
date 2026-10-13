@@ -1,0 +1,12 @@
+{
+  "name": "tactical-watch-design-tools",
+  "private": true,
+  "scripts": {
+    "generate": "node tools/generate.cjs",
+    "test": "node --test tests/pipeline.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "sharp": "0.35.4"
+  }
+}

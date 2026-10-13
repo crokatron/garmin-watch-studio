@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+let html=fs.readFileSync(path.join(root,'Watch-Face-Designer.html'),'utf8');
+html=html.replaceAll('watchStudio-uploaded-20260914-v3','watchStudio-studio2-v1').replace('<title>Watch Face Studio</title>','<title>TacticalWatch · Studio 2</title>');
+const seed=fs.existsSync(path.join(root,'design/studio2-preview.json'))?'design/studio2-preview.json':'design/approved-layout.json';
+const baseline=JSON.stringify(JSON.parse(fs.readFileSync(path.join(root,seed),'utf8'))).replaceAll('<','\\u003c');
+html=html.replace('let d=initial();','let d='+baseline+';');
+html=html.replace('</html>','<style>'+fs.readFileSync(path.join(root,'studio/simple.css'),'utf8')+'</style>'+['event-model.js','interaction-model.js','interaction-view.js','simple.js'].map(n=>'<script>'+fs.readFileSync(path.join(root,'studio',n),'utf8')+'</script>').join('')+'</html>');
+fs.writeFileSync(path.join(root,'Watch-Face-Studio.html'),html);
+console.log('Built self-contained Studio 2 from the preserved original engine and '+seed+'.');
