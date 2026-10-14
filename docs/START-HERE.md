@@ -12,4 +12,4 @@ Visual watch-face layers and previews, with a generated Monkey C workflow and si
 
 **Next maintainer action:** Recover the approved design and configured Garmin environment before full pipeline/build tests. Verify the documented fenix9pro47mm/API target against the intended hardware; run simulator comparisons and a separate hardware/power test after authorised design changes.
 
-**Status:** private upload verified on 14 October 2026. These guides accompany the private source package. Live runtime, data backups and full recovery were not retested. Public release needs separate approval.
+**Status:** private upload verified on 14 October 2026. These guides accompany the source package. Live runtime, data backups and full recovery were not retested. Public sharing was authorised on 14 October 2026; the NAS backup remains private.

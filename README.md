@@ -4,7 +4,9 @@
 
 Design a watch face visually, preview its information hierarchy and preserve the design as JSON. Studio 2 provides the editing workspace; the accompanying Monkey C source and build tools translate supported designs into a watch application. A browser preview is not proof that every simulated field or hold interaction is available on the physical watch.
 
-**Private preview · not published.**
+[Publication checks and remaining limits](docs/PUBLICATION.md)
+
+**Public source preview · MIT for original contributions.**
 
 [Open the visual manual](docs/USER-MANUAL.md) · [Download the self-contained demo](demo.html) · [Release notes](CHANGELOG.md)
 
