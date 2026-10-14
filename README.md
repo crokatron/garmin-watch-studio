@@ -1,5 +1,7 @@
 # Garmin Watch Studio
 
+**Maintaining this project? [Start here](docs/START-HERE.md) · [Detailed handover](docs/HANDOVER.md)**
+
 Design a watch face visually, preview its information hierarchy and preserve the design as JSON. Studio 2 provides the editing workspace; the accompanying Monkey C source and build tools translate supported designs into a watch application. A browser preview is not proof that every simulated field or hold interaction is available on the physical watch.
 
 **Private preview · not published.**
@@ -12,7 +14,7 @@ Download `demo.html` using GitHub’s Download raw file control, then open it in
 
 ### Actual tool · controls at a glance
 
-Actual application screenshot. Numbered boxes point to the controls described below. 
+Actual application screenshot. Numbered boxes point to the controls described below.
 
 ![Garmin Watch Studio — numbered controls](docs/images/guide-1.jpg)
 
